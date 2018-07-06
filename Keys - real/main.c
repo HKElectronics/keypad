@@ -64,8 +64,8 @@ DDRB = 0x00;		// Set port B as inputs
 DDRC = 0x0F;		// Set port C as IIIIOOOO
 DDRD = 0x07;		// Set port D as IIIIIOOO
 }
-/*master add keycode *7623782*# status light number # keycode #
-  master remove keycode *2873267*# status light number #
+/*master add keycode *7623782*# relay output # keycode #
+  master remove keycode *2873267*# relay output #
 */
 void loop()
 	{
