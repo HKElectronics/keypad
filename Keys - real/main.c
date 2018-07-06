@@ -58,7 +58,7 @@ int strIndex = 0;
 string codes[6][10];
 string input[10];
 codes[0] = '*7623782*'; // master set code
-codes[1] = '*2873267*'; // master remove code
+codes[5] = '*2873267*'; // master remove code
 DDRA = 0x00;		// Set port A as inputs
 DDRB = 0x00;		// Set port B as inputs
 DDRC = 0x0F;		// Set port C as IIIIOOOO
@@ -88,23 +88,23 @@ void loop()
 					{
 						//call program function
 					}
-				else if (strcmp(codes[1],input))
+				else if (strcmp(codes[5],input))
 					{
 						//call delete function
 					}
-				else if (strcmp(codes[2],input))
+				else if (strcmp(codes[1],input))
 					{
 						//toggle relay 1
 					}
-				else if (strcmp(codes[3],input))
+				else if (strcmp(codes[2],input))
 					{
 						//toggle relay 2
 					}
-				else if (strcmp(codes[4],input))
+				else if (strcmp(codes[3],input))
 					{
 						//toggle relay 3
 					}
-				else if (strcmp(codes[5],input))
+				else if (strcmp(codes[4],input))
 					{
 						//toggle relay 4
 					}
