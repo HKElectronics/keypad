@@ -8,10 +8,10 @@
 
 
 #include <avr/io.h>
-
 #include <util/delay.h>
 //#include <avr/macros.h>
 #include <stdio.h>
+#include <string.h>
 
 char scanKey();
 char getCase(int column, int row);
@@ -53,13 +53,11 @@ void setup();
 int temp = 0x00;
 char key = 'X';
 int flag = 0x00;
-int number = 0x00;
-int column = 0x00;
-int key_temp = 0x00;
-int column_scan = 0x00;
-string input[6][10];
-input[0] = '*7623782*'; // master set code
-input[1] = '*2873267*'; // master remove code
+int strIndex = 0;
+string codes[6][10];
+string input[10];
+codes[0] = '*7623782*'; // master set code
+codes[1] = '*2873267*'; // master remove code
 DDRA = 0x00;		// Set port A as inputs
 DDRB = 0x00;		// Set port B as inputs
 DDRC = 0x0F;		// Set port C as IIIIOOOO
@@ -71,18 +69,44 @@ DDRD = 0x07;		// Set port D as IIIIIOOO
 void loop()
 	{
 	key = 'M';
-		flag = 0x00;
+	flag = 0x00;
 //setup keypad data direction register
-		DDRD = 0x07;	
+	DDRD = 0x07;	
+	strIndex=0;
 		
-			key = scankeys();
+			key = scanKey();
 			if (key != 'Q' && key != 'M' && key != 'Z' && key != '#')
 			{
-				//write key to array
+				input[strIndex]=key;
+				strIndex++;
+				//write key to string
 			}
-			else 
-				//do nothing
-			
+			else if (key == '#')
+				//test string
+				if (strcmp(codes[0],input))
+					{
+						//call program function
+					}
+				else if (strcmp(codes[1],input))
+					{
+						//call delete function
+					}
+				else if (strcmp(codes[2],input))
+					{
+						//toggle relay 1
+					}
+				else if (strcmp(codes[3],input))
+					{
+						//toggle relay 2
+					}
+				else if (strcmp(codes[4],input))
+					{
+						//toggle relay 3
+					}
+				else if (strcmp(codes[5],input))
+					{
+						//toggle relay 4
+					}
 			}
 
 
