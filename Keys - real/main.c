@@ -12,6 +12,7 @@
 //#include <avr/macros.h>
 #include <stdio.h>
 #include <string.h>
+#include <avr/eeprom.h> 
 
 char scanKey();
 char getCase(int column, int row);
