@@ -2,10 +2,10 @@
  * Keys - real.c
  *
  * Created: 2018-07-03 9:35:11 AM
- * Author : hinza
+ * Author : hinza & karrasr
  */ 
-#define DEBUG
 
+/* All status are to be latched in ***PLC*** not through variables */
 
 #include <avr/io.h>
 #include <util/delay.h>
@@ -15,8 +15,10 @@
 #include <avr/eeprom.h> 
 
 char scanKey();
-char getCase(int column, int row);
-
+char transposeKey(int column, int row);
+void setRelay(int relayNumber, int relayState);//set status on relay (1 on, 0 off)
+void resetOutputs ();//set all relay states to 0
+void errorOutput ();
 /**********************************************************
 *	Circuit connections:
 *	
@@ -55,10 +57,11 @@ int temp = 0x00;
 char key = 'X';
 int flag = 0x00;
 int strIndex = 0;
-string codes[6][10];
+string codes[7][10];
 string input[10];
 codes[0] = '*7623782*'; // master set code
 codes[5] = '*2873267*'; // master remove code
+codes[6] = '*4*263*5*'; // reset all outputs - does not wipe codes from eeprom
 DDRA = 0x00;		// Set port A as inputs
 DDRB = 0x00;		// Set port B as inputs
 DDRC = 0x0F;		// Set port C as IIIIOOOO
@@ -94,26 +97,42 @@ void loop()
 					}
 				else if (strcmp(codes[1],input))
 					{
-						//toggle relay 1
+						setRelay(1,1);
 					}
 				else if (strcmp(codes[2],input))
 					{
-						//toggle relay 2
+						setRelay(2,1);
 					}
 				else if (strcmp(codes[3],input))
 					{
-						//toggle relay 3
+						setRelay(3,1);
 					}
 				else if (strcmp(codes[4],input))
 					{
-						//toggle relay 4
+						setRelay(4,1);
+					}
+				else if (strcmp(codes[6],input))
+					{
+
 					}
 				else
 					{
-						//clear input
+						//clear outputs & flash error
+						errorOutput();
+						for ( i=0 ; i<10 ; i++)
+						{
+							input[i]='r';
+						}
 					}
 			}
-
+			if (strIndex > 9)
+				{
+					errorOutput();
+					for ( i=0 ; i<10 ; i++)
+						{
+							input[i]='r';
+						}
+				}
 
 
 	}
@@ -130,7 +149,7 @@ char scanKey()
 				temp = scankey(i);
 				if (temp != 0x00)
 				{
-					KeyPressed = getCase(j,i); //send position for decoding
+					KeyPressed = transposeKey(j,i); //send position for decoding
 					return (KeyPressed); //return pointer to array with column and row
 				}
 			}
@@ -143,7 +162,7 @@ char scanKey()
 // 20 21 22		7 8 9
 // 30 31 32		* 0 #
 */
-char getCase(int column, int row)
+char transposeKey(int column, int row)
 	{
 		char key = 'Q';
 
@@ -203,3 +222,32 @@ char getCase(int column, int row)
 		}
 		return key;
 	}
+
+void setRelay(int relayNumber, int relayState)
+{
+
+
+}
+
+void resetOutputs ()//set all relay states to 0
+{
+	for (i = 1; i < 5; i++)
+	{
+		setRelay(i,0);
+	}
+}
+
+void errorOutput ()//toggle relays - connected to lights & plc on and off 5 times
+{
+	int counter = 5;
+	while (counter > 0)
+	{
+		for (i=1; i<5; i++)
+		{
+			setRelay(i,1);
+		}
+		_delay_ms(500);
+		resetOutputs();
+		_delay_ms(500);
+	}
+}
