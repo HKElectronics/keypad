@@ -19,6 +19,8 @@ char transposeKey(int column, int row);
 void setRelay(int relayNumber, int relayState);//set status on relay (1 on, 0 off)
 void resetOutputs ();//set all relay states to 0
 void errorOutput ();
+void read_codes();
+void write_codes();
 /**********************************************************
 *	Circuit connections:
 *	
@@ -251,3 +253,21 @@ void errorOutput ()//toggle relays - connected to lights & plc on and off 5 time
 		_delay_ms(500);
 	}
 }
+
+	/************************************************************************/
+	/* eeprom_read_block													*/
+	/* reads pointer to variable containing information to write to EEPROM  */
+	/* in read function, RAM_to_write_into is where the copy of the EEPROM	*/
+	/* will be stored														*/
+	/* EEPROMAddress_of_first_byte is the address of the first byte of the	*/
+	/* block you will be writing into the EEPROM							*/
+	/************************************************************************/
+	void read_codes()
+	{
+		eeprom_read_block((void*)RAM_to_write_into, (const void*)EEPROMAddress_of_first_byte, 10);
+	}
+	
+	void write_codes()
+	{
+		eeprom_update_block((void*)RAM_to_write_out_of, (const void*)EEPROMAddress_of_first_byte, 10);
+	}
