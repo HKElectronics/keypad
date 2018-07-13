@@ -142,6 +142,7 @@ void loop()
 
 char scanKey()
 {
+	int debounce = 50; //debounce time in ms
 	for (int j=0x0; j<0x3; j++)//set column - test row
 		{
 			//set column high
@@ -157,7 +158,8 @@ char scanKey()
 			}
 		}
 	}
-
+	_delay_ms(debounce);
+}
 /* Keypad pattern r c
 // 00 01 02		1 2 3
 // 10 11 12		4 5 6
