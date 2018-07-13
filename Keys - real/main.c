@@ -264,12 +264,12 @@ void errorOutput ()//toggle relays - connected to lights & plc on and off 5 time
 	/* EEPROMAddress_of_first_byte is the address of the first byte of the	*/
 	/* block you will be writing into the EEPROM							*/
 	/************************************************************************/
-	void read_codes()
+	void read_codes(void)
 	{
 		eeprom_read_block((void*)RAM_to_write_into, (const void*)EEPROMAddress_of_first_byte, 10);
 	}
 	
-	void write_codes()
+	void write_codes(void)
 	{
 		eeprom_update_block((void*)RAM_to_write_out_of, (const void*)EEPROMAddress_of_first_byte, 10);
 	}
