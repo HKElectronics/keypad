@@ -9,7 +9,7 @@
 
 #include <avr/io.h>
 #include <util/delay.h>
-//#include <avr/macros.h>
+#include "macros.h"
 #include <stdio.h>
 #include <string.h>
 #include <avr/eeprom.h> 
@@ -99,23 +99,23 @@ void loop()
 					}
 				else if (strcmp(codes[1],input))
 					{
-						setRelay(1,1);
+						setRelay(1,1);			// Code #1 relay engage, PORT C pin 0
 					}
 				else if (strcmp(codes[2],input))
 					{
-						setRelay(2,1);
+						setRelay(2,1);			// Code #2 relay engage, PORT C pin 1
 					}
 				else if (strcmp(codes[3],input))
 					{
-						setRelay(3,1);
+						setRelay(3,1);			/// Code #3 relay engage, PORT C pin 2
 					}
 				else if (strcmp(codes[4],input))
 					{
-						setRelay(4,1);
+						setRelay(4,1);			// Code #4 relay engage, PORT C pin 3
 					}
 				else if (strcmp(codes[6],input))
 					{
-
+						
 					}
 				else
 					{
@@ -265,11 +265,11 @@ void errorOutput ()//toggle relays - connected to lights & plc on and off 5 time
 	/* block you will be writing into the EEPROM							*/
 	/************************************************************************/
 	void read_codes(void)
-	{
-		eeprom_read_block((void*)RAM_to_write_into, (const void*)EEPROMAddress_of_first_byte, 10);
-	}
+{
+		eeprom_read_block((void*)&codes, (const void*)EEPROMAddress_of_first_byte, 10);
+}
 	
 	void write_codes(void)
-	{
-		eeprom_update_block((void*)RAM_to_write_out_of, (const void*)EEPROMAddress_of_first_byte, 10);
-	}
+{
+		eeprom_update_block((void*)&codes, (const void*)EEPROMAddress_of_first_byte, 10);
+}
