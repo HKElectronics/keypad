@@ -153,12 +153,13 @@ char scanKey()
 				if (temp != 0x00)
 				{
 					KeyPressed = transposeKey(j,i); //send position for decoding
+					_delay_ms(debounce);
 					return (KeyPressed); //return pointer to array with column and row
 				}
 			}
 		}
 	}
-	_delay_ms(debounce);
+	
 }
 /* Keypad pattern r c
 // 00 01 02		1 2 3
@@ -272,4 +273,28 @@ void errorOutput ()//toggle relays - connected to lights & plc on and off 5 time
 	void write_codes(void)
 	{
 		eeprom_update_block((void*)RAM_to_write_out_of, (const void*)EEPROMAddress_of_first_byte, 10);
+	}
+
+	void programCode (char codeToSave[10], int relayNumber, string* codes[][])
+	{
+		if (relayNumber > 0 && relayNumber < 5)
+			{
+				strcpy(codes,codeToSave[relayNumber]);
+			}
+		else
+			errorOutput();
+	}
+	
+	void removeCode (int relayNumber, string* codes[])
+	{
+		char wipeString = '#';
+		if (relayNumber > 0 && relayNumber <5)
+			{
+				for (int i=0;i<10;i++)
+				{
+					codes[relayNumber][i]=wipeString;
+				}
+			}
+		else
+			errorOutput();
 	}
