@@ -91,7 +91,7 @@ void loop()
 				//test string
 				if (strcmp(codes[0],input))
 					{
-						//call program function
+						programCode();
 					}
 				else if (strcmp(codes[5],input))
 					{
@@ -99,19 +99,19 @@ void loop()
 					}
 				else if (strcmp(codes[1],input))
 					{
-						setRelay(1,1);			// Code #1 relay engage, PORT C pin 0
+						set_bit(1,1);			// Code #1 relay engage, PORT C pin 0
 					}
 				else if (strcmp(codes[2],input))
 					{
-						setRelay(2,1);			// Code #2 relay engage, PORT C pin 1
+						set_bit(2,1);			// Code #2 relay engage, PORT C pin 1
 					}
 				else if (strcmp(codes[3],input))
 					{
-						setRelay(3,1);			/// Code #3 relay engage, PORT C pin 2
+						set_bit(3,1);			/// Code #3 relay engage, PORT C pin 2
 					}
 				else if (strcmp(codes[4],input))
 					{
-						setRelay(4,1);			// Code #4 relay engage, PORT C pin 3
+						set_bit(4,1);			// Code #4 relay engage, PORT C pin 3
 					}
 				else if (strcmp(codes[6],input))
 					{
@@ -241,6 +241,33 @@ void resetOutputs ()//set all relay states to 0
 	}
 }
 
+void programCode (char codeToSave[10], int relayNumber, string* codes[][]);
+//usage: programCode(input, code#, *codes)
+{
+	if (relayNumber > 0 && relayNumber < 5)
+	{
+		strcpy(codes,codeToSave[relayNumber]);
+	}
+	else
+	errorOutput();
+}
+
+//usage removeCode(code#,*codes)
+void removeCode (int relayNumber, string* codes[])
+{
+	char wipeString = '#';
+	if (relayNumber > 0 && relayNumber <5)
+	{
+		for (int i=0;i<10;i++)
+		{
+			codes[relayNumber][i]=wipeString;
+		}
+	}
+	else
+	errorOutput();
+}
+
+
 void errorOutput ()//toggle relays - connected to lights & plc on and off 5 times
 {
 	int counter = 5;
@@ -266,10 +293,10 @@ void errorOutput ()//toggle relays - connected to lights & plc on and off 5 time
 	/************************************************************************/
 	void read_codes(void)
 {
-		eeprom_read_block((void*)&codes, (const void*)EEPROMAddress_of_first_byte, 10);
+		eeprom_read_block((void*)&codes, (const void*)EEPROMAddress_of_first_byte, 70);
 }
 	
 	void write_codes(void)
 {
-		eeprom_update_block((void*)&codes, (const void*)EEPROMAddress_of_first_byte, 10);
+		eeprom_update_block((void*)&codes, (const void*)EEPROMAddress_of_first_byte, 70);
 }
