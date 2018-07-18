@@ -59,6 +59,7 @@ int temp = 0x00;
 char key = 'X';
 int flag = 0x00;
 int strIndex = 0;
+char EEPROMaDDRESSoFfIRSTbYTE//RICHARD LOOK HERE DERP
 string codes[7][10];
 string input[10];
 codes[0] = '*7623782*'; // master set code
@@ -293,10 +294,10 @@ void errorOutput ()//toggle relays - connected to lights & plc on and off 5 time
 	/************************************************************************/
 	void read_codes(void)
 {
-		eeprom_read_block((void*)&codes, (const void*)EEPROMAddress_of_first_byte, 70);
+		eeprom_read_block((void*)&codes, (char void*)EEPROMaDDRESSoFfIRSTbYTE, 70);
 }
 	
 	void write_codes(void)
 {
-		eeprom_update_block((void*)&codes, (const void*)EEPROMAddress_of_first_byte, 70);
+		eeprom_update_block((void*)&codes, (char void*)EEPROMaDDRESSoFfIRSTbYTE, 70);
 }
