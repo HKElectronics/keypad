@@ -100,23 +100,26 @@ void loop()
 					}
 				else if (strcmp(codes[1],input))
 					{
-						set_bit(1,1);			// Code #1 relay engage, PORT C pin 0
+						set_bit(PORTC,1);			// Code #1 relay engage, PORT C pin 0
 					}
 				else if (strcmp(codes[2],input))
 					{
-						set_bit(2,1);			// Code #2 relay engage, PORT C pin 1
+						set_bit(PORTC,1);			// Code #2 relay engage, PORT C pin 1
 					}
 				else if (strcmp(codes[3],input))
 					{
-						set_bit(3,1);			/// Code #3 relay engage, PORT C pin 2
+						set_bit(PORTC,1);			/// Code #3 relay engage, PORT C pin 2
 					}
 				else if (strcmp(codes[4],input))
 					{
-						set_bit(4,1);			// Code #4 relay engage, PORT C pin 3
+						set_bit(PORTC,1);			// Code #4 relay engage, PORT C pin 3
 					}
 				else if (strcmp(codes[6],input))
 					{
-						
+						clear_bit(PORTC,0);			// Relay output 1 disabled
+						clear_bit(PORTC,1);			// Relay output 2 disabled
+						clear_bit(PORTC,2);			// Relay output 3 disabled
+						clear_bit(PORTC,3);			// Relay output 4 disabled
 					}
 				else
 					{
@@ -299,9 +302,6 @@ void errorOutput ()//toggle relays - connected to lights & plc on and off 5 time
 }
 	
 	void write_codes(void)
-	{
-		eeprom_update_block((void*)RAM_to_write_out_of, (const void*)EEPROMAddress_of_first_byte, 10);
-	}
 {
 		eeprom_update_block((void*)&codes, (char void*)EEPROMaDDRESSoFfIRSTbYTE, 70);
 }
