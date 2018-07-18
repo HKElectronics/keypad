@@ -154,12 +154,13 @@ char scanKey()
 				if (temp != 0x00)
 				{
 					KeyPressed = transposeKey(j,i); //send position for decoding
+					_delay_ms(debounce);
 					return (KeyPressed); //return pointer to array with column and row
 				}
 			}
 		}
 	}
-	_delay_ms(debounce);
+	
 }
 /* Keypad pattern r c
 // 00 01 02		1 2 3
@@ -298,6 +299,9 @@ void errorOutput ()//toggle relays - connected to lights & plc on and off 5 time
 }
 	
 	void write_codes(void)
+	{
+		eeprom_update_block((void*)RAM_to_write_out_of, (const void*)EEPROMAddress_of_first_byte, 10);
+	}
 {
 		eeprom_update_block((void*)&codes, (char void*)EEPROMaDDRESSoFfIRSTbYTE, 70);
 }
