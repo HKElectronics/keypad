@@ -9,7 +9,7 @@
 
 #include <avr/io.h>
 #include <util/delay.h>
-#include "macros.h"
+//#include <avr/macros.h>
 #include <stdio.h>
 #include <string.h>
 #include <avr/eeprom.h> 
@@ -19,8 +19,6 @@ char transposeKey(int column, int row);
 void setRelay(int relayNumber, int relayState);//set status on relay (1 on, 0 off)
 void resetOutputs ();//set all relay states to 0
 void errorOutput ();
-void read_codes();
-void write_codes();
 /**********************************************************
 *	Circuit connections:
 *	
@@ -53,18 +51,21 @@ void write_codes();
 /* DDR(X) = Data direction registers for port (X)						*/
 /* I = Input, O = Output		set in binary, MSB X X X X X X X X LSB	*/
 /************************************************************************/
-void setup();
+//Global Variables
+char key;
+int flag;
+int stringIndex;
+char codes[7][10];
+char input[10];
+
+void setup(void)
 {
-int temp = 0x00;
-char key = 'X';
-int flag = 0x00;
-int strIndex = 0;
-char EEPROMaDDRESSoFfIRSTbYTE//RICHARD LOOK HERE DERP
-string codes[7][10];
-string input[10];
-codes[0] = '*7623782*'; // master set code
-codes[5] = '*2873267*'; // master remove code
-codes[6] = '*4*263*5*'; // reset all outputs - does not wipe codes from eeprom
+key = 'X';
+flag = 0x00;
+stringIndex = 0;
+codes[0][0] = codes[0][8] = (char) "*"; codes[0][1] = (char) "7"; codes[0][2] = (char) "6"; codes[0][3] = (char) "2"; codes[0][4] = (char) "3"; codes[0][5] = (char) "7"; codes[0][6] = (char) "8"; codes[0][7] = (char) "2";// master set code
+codes[5][0] = codes[5][8] = (char) "*"; codes[5][1] = (char) "2"; codes[5][2] = (char) "8"; codes[5][3] = (char) "7"; codes[5][4] = (char) "3"; codes[5][5] = (char) "2"; codes[5][6] = (char) "6"; codes[5][7] = (char) "7"; // master remove code
+codes[6][0] = codes[6][8] = (char) "*"; codes[6][1] = (char) "4"; codes[6][2] = (char) "*"; codes[6][3] = (char) "2"; codes[6][4] = (char) "6"; codes[6][5] = (char) "3"; codes[6][6] = (char) "*"; codes[6][7] = (char) "5"; // reset all outputs - does not wipe codes from eeprom
 DDRA = 0x00;		// Set port A as inputs
 DDRB = 0x00;		// Set port B as inputs
 DDRC = 0x0F;		// Set port C as IIIIOOOO
@@ -73,68 +74,67 @@ DDRD = 0x07;		// Set port D as IIIIIOOO
 /*master add keycode *7623782*# relay output # keycode #
   master remove keycode *2873267*# relay output #
 */
-void loop()
-	{
+void loop(void)
+{
 	key = 'M';
 	flag = 0x00;
 //setup keypad data direction register
 	DDRD = 0x07;	
-	strIndex=0;
+	stringIndex=0;
 		
-			key = scanKey();
-			if (key != 'Q' && key != 'M' && key != 'Z' && key != '#')
-			{
-				input[strIndex]=key;
-				strIndex++;
-				//write key to string
+	key = scanKey();
+	if (key != 'Q' && key != 'M' && key != 'Z' && key != '#')
+		{
+			input[stringIndex]=key;
+			stringIndex++;
+			//write key to string
+		}
+	else if (key == '#')
+		{
+			//test string
+			if ( strcmp(codes[0],input) )
+				{
+					//call program function
+				}
+			else if ( strcmp(codes[5],input) )
+				{
+					//call delete function
+				}
+			else if ( strcmp(codes[1],input) )
+				{
+					setRelay(1,1);
+				}
+			else if ( strcmp(codes[2],input) )
+				{
+					setRelay(2,1);
+				}
+			else if ( strcmp(codes[3],input) )
+				{
+					setRelay(3,1);
+				}
+			else if ( strcmp(codes[4],input) )
+				{
+					setRelay(4,1);
+				}
+			else if ( strcmp(codes[6],input) )
+				{
+					//reset locks
+				}
+			else
+				{
+					//clear string & flash error
+					errorOutput();
+						
+					for (int i=0 ; i<10 ; i++)
+					{
+						input[i]='r';
+					}
+				}
 			}
-			else if (key == '#')
-				//test string
-				if (strcmp(codes[0],input))
-					{
-						programCode();
-					}
-				else if (strcmp(codes[5],input))
-					{
-						//call delete function
-					}
-				else if (strcmp(codes[1],input))
-					{
-						set_bit(PORTC,1);			// Code #1 relay engage, PORT C pin 0
-					}
-				else if (strcmp(codes[2],input))
-					{
-						set_bit(PORTC,1);			// Code #2 relay engage, PORT C pin 1
-					}
-				else if (strcmp(codes[3],input))
-					{
-						set_bit(PORTC,1);			/// Code #3 relay engage, PORT C pin 2
-					}
-				else if (strcmp(codes[4],input))
-					{
-						set_bit(PORTC,1);			// Code #4 relay engage, PORT C pin 3
-					}
-				else if (strcmp(codes[6],input))
-					{
-						clear_bit(PORTC,0);			// Relay output 1 disabled
-						clear_bit(PORTC,1);			// Relay output 2 disabled
-						clear_bit(PORTC,2);			// Relay output 3 disabled
-						clear_bit(PORTC,3);			// Relay output 4 disabled
-					}
-				else
-					{
-						//clear outputs & flash error
-						errorOutput();
-						for ( i=0 ; i<10 ; i++)
-						{
-							input[i]='r';
-						}
-					}
-			}
-			if (strIndex > 9)
+			if (stringIndex > 9)
 				{
 					errorOutput();
-					for ( i=0 ; i<10 ; i++)
+					for (int i=0 ; i<10 ; i++)
 						{
 							input[i]='r';
 						}
@@ -146,7 +146,9 @@ void loop()
 
 char scanKey()
 {
-	int debounce = 50; //debounce time in ms
+	int temp = 0x00;
+	char KeyPressed = "L";
+	
 	for (int j=0x0; j<0x3; j++)//set column - test row
 		{
 			//set column high
@@ -157,14 +159,12 @@ char scanKey()
 				if (temp != 0x00)
 				{
 					KeyPressed = transposeKey(j,i); //send position for decoding
-					_delay_ms(debounce);
 					return (KeyPressed); //return pointer to array with column and row
 				}
 			}
 		}
 	}
-	
-}
+
 /* Keypad pattern r c
 // 00 01 02		1 2 3
 // 10 11 12		4 5 6
@@ -240,45 +240,18 @@ void setRelay(int relayNumber, int relayState)
 
 void resetOutputs ()//set all relay states to 0
 {
-	for (i = 1; i < 5; i++)
+	for (int i = 1; i < 5; i++)
 	{
 		setRelay(i,0);
 	}
 }
-
-void programCode (char codeToSave[10], int relayNumber, string* codes[][]);
-//usage: programCode(input, code#, *codes)
-{
-	if (relayNumber > 0 && relayNumber < 5)
-	{
-		strcpy(codes,codeToSave[relayNumber]);
-	}
-	else
-	errorOutput();
-}
-
-//usage removeCode(code#,*codes)
-void removeCode (int relayNumber, string* codes[])
-{
-	char wipeString = '#';
-	if (relayNumber > 0 && relayNumber <5)
-	{
-		for (int i=0;i<10;i++)
-		{
-			codes[relayNumber][i]=wipeString;
-		}
-	}
-	else
-	errorOutput();
-}
-
 
 void errorOutput ()//toggle relays - connected to lights & plc on and off 5 times
 {
 	int counter = 5;
 	while (counter > 0)
 	{
-		for (i=1; i<5; i++)
+		for (int i=1; i<5; i++)
 		{
 			setRelay(i,1);
 		}
@@ -286,22 +259,4 @@ void errorOutput ()//toggle relays - connected to lights & plc on and off 5 time
 		resetOutputs();
 		_delay_ms(500);
 	}
-}
-
-	/************************************************************************/
-	/* eeprom_read_block													*/
-	/* reads pointer to variable containing information to write to EEPROM  */
-	/* in read function, RAM_to_write_into is where the copy of the EEPROM	*/
-	/* will be stored														*/
-	/* EEPROMAddress_of_first_byte is the address of the first byte of the	*/
-	/* block you will be writing into the EEPROM							*/
-	/************************************************************************/
-	void read_codes(void)
-{
-		eeprom_read_block((void*)&codes, (char void*)EEPROMaDDRESSoFfIRSTbYTE, 70);
-}
-	
-	void write_codes(void)
-{
-		eeprom_update_block((void*)&codes, (char void*)EEPROMaDDRESSoFfIRSTbYTE, 70);
 }
