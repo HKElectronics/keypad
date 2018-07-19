@@ -161,7 +161,6 @@ char scanKey()
 				if (temp != 0x00)
 				{
 					KeyPressed = transposeKey(j,i); //send position for decoding
-					_delay_ms(debounce);
 					return (KeyPressed); //return pointer to array with column and row
 				}
 			}
