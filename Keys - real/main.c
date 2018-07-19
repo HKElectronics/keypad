@@ -18,7 +18,11 @@ char scanKey();
 char transposeKey(int column, int row);
 void setRelay(int relayNumber, int relayState);//set status on relay (1 on, 0 off)
 void resetOutputs ();//set all relay states to 0
+void programCode(int relayNumber);
+void removeCode(int relayNumber);
 void errorOutput ();
+void read_codes ();
+void write_codes ();
 /**********************************************************
 *	Circuit connections:
 *	
@@ -57,6 +61,7 @@ int flag;
 int stringIndex;
 char codes[7][10];
 char input[10];
+const int EEPROMaDDRESSoFfIRSTbYTE = 0x001F;//EEPROM target address
 
 void setup(void)
 {
@@ -248,7 +253,7 @@ void resetOutputs ()//set all relay states to 0
 	}
 }
 
-void programCode (char codeToSave[10], int relayNumber, string* codes[][]);
+void programCode (int relayNumber)
 //usage: programCode(input, code#, *codes)
 {
 	if (relayNumber > 0 && relayNumber < 5)
@@ -260,7 +265,7 @@ void programCode (char codeToSave[10], int relayNumber, string* codes[][]);
 }
 
 //usage removeCode(code#,*codes)
-void removeCode (int relayNumber, string* codes[])
+void removeCode (int relayNumber)
 {
 	char wipeString = '#';
 	if (relayNumber > 0 && relayNumber <5)
