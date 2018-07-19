@@ -14,7 +14,7 @@
 #include <string.h>
 #include <avr/eeprom.h> 
 
-char scanKey();
+char scanKeys();
 char transposeKey(int column, int row);
 void setRelay(int relayNumber, int relayState);//set status on relay (1 on, 0 off)
 void resetOutputs ();//set all relay states to 0
@@ -87,7 +87,7 @@ void loop(void)
 	DDRD = 0x07;	
 	stringIndex=0;
 		
-	key = scanKey();
+	key = scanKeys();
 	if (key != 'Q' && key != 'M' && key != 'Z' && key != '#')
 		{
 			input[stringIndex]=key;
@@ -150,11 +150,11 @@ void loop(void)
 	}
 
 
-char scanKey()
+char scanKeys()
 {
 	int debounce = 50; //debounce time in ms
 	int temp = 0x00;
-	char KeyPressed = "L";
+	char KeyPressed = L;
 	
 	for (int j=0x0; j<0x3; j++)//set column - test row
 		{
@@ -162,10 +162,11 @@ char scanKey()
 			PORTD = j;
 			for (int i=0x00; i<0x04; i++) //check for row
 			{
-				temp = scankey(i);
+				temp = ;//need input from port
 				if (temp != 0x00)
 				{
 					KeyPressed = transposeKey(j,i); //send position for decoding
+					_delay_ms(debounce);
 					return (KeyPressed); //return pointer to array with column and row
 				}
 			}
@@ -258,7 +259,7 @@ void programCode (int relayNumber)
 {
 	if (relayNumber > 0 && relayNumber < 5)
 	{
-		strcpy(codes,codeToSave[relayNumber]);
+		strcpy(codes[relayNumber],input);
 	}
 	else
 	errorOutput();
@@ -304,10 +305,10 @@ void errorOutput ()//toggle relays - connected to lights & plc on and off 5 time
   /************************************************************************/
   void read_codes(void)
   {
-	  eeprom_read_block((void*)&codes, (char void*)EEPROMaDDRESSoFfIRSTbYTE, 70);
+	  eeprom_read_block((void*)&codes, (char *)EEPROMaDDRESSoFfIRSTbYTE, 70);
   }
   
   void write_codes(void)
   {
-	  eeprom_update_block((void*)&codes, (char void*)EEPROMaDDRESSoFfIRSTbYTE, 70);
+	  eeprom_update_block((void*)&codes, (char *)EEPROMaDDRESSoFfIRSTbYTE, 70);
   }
