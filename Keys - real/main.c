@@ -9,7 +9,7 @@
 
 #include <avr/io.h>
 #include <util/delay.h>
-//#include <avr/macros.h>
+#include "macros.h"
 #include <stdio.h>
 #include <string.h>
 #include <avr/eeprom.h> 
@@ -107,23 +107,23 @@ void loop(void)
 				}
 			else if ( strcmp(codes[1],input) )
 				{
-					setRelay(1,1);
+					toggle_bit(PORTC,0);			// Toggle relay output 1
 				}
 			else if ( strcmp(codes[2],input) )
 				{
-					setRelay(2,1);
+					toggle_bit(PORTC,1);			// Toggle relay output 2
 				}
 			else if ( strcmp(codes[3],input) )
 				{
-					setRelay(3,1);
+					toggle_bit(PORTC,2);			// Toggle relay output 3
 				}
 			else if ( strcmp(codes[4],input) )
 				{
-					setRelay(4,1);
+					toggle_bit(PORTC,3);			// Toggle relay output 4
 				}
 			else if ( strcmp(codes[6],input) )
 				{
-					//reset locks
+					resetOutputs();
 				}
 			else
 				{
@@ -240,18 +240,12 @@ char transposeKey(int column, int row)
 		return key;
 	}
 
-void setRelay(int relayNumber, int relayState)
+void resetOutputs ()				//set all relay states to 0
 {
-
-
-}
-
-void resetOutputs ()//set all relay states to 0
-{
-	for (int i = 1; i < 5; i++)
-	{
-		setRelay(i,0);
-	}
+	clear_bit(PORTC,0);				// Force clear all relay outputs
+	clear_bit(PORTC,1);
+	clear_bit(PORTC,2);
+	clear_bit(PORTC,3);
 }
 
 void programCode (int relayNumber)
